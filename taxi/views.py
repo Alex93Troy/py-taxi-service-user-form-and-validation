@@ -3,14 +3,17 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
+from taxi.forms import DriverCreationForm
+from django.views import View
 
 from .models import Driver, Car, Manufacturer
+from .forms import DriverLicenseUpdateForm
+from django.shortcuts import get_object_or_404, redirect
 
 
 @login_required
 def index(request):
     """View function for the home page of the site."""
-
     num_drivers = Driver.objects.count()
     num_cars = Car.objects.count()
     num_manufacturers = Manufacturer.objects.count()
@@ -87,3 +90,45 @@ class DriverListView(LoginRequiredMixin, generic.ListView):
 class DriverDetailView(LoginRequiredMixin, generic.DetailView):
     model = Driver
     queryset = Driver.objects.all().prefetch_related("cars__manufacturer")
+
+
+class DriverCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Driver
+    form_class = DriverCreationForm
+    template_name = "taxi/driver_form.html"
+
+
+class DriverDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Driver
+    success_url = reverse_lazy("taxi:driver-list")
+    template_name = "taxi/driver_confirm_delete.html"
+
+
+class DriverUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Driver
+    form_class = DriverLicenseUpdateForm
+    template_name = "taxi/driver_form.html"
+
+
+class AssignDriverToCarView(LoginRequiredMixin, View):
+    def get(self, request, car_id):
+        car = get_object_or_404(Car, id=car_id)
+        return redirect("taxi:car-detail", pk=car.id)
+
+    def post(self, request, car_id):
+        car = get_object_or_404(Car, id=car_id)
+        driver = request.user
+        if driver not in car.drivers.all():
+            car.drivers.add(driver)
+        return redirect("taxi:car-detail", pk=car.id)
+
+
+class RemoveDriverFromCarView(View):
+    def post(self, request, car_id, driver_id):
+        car = get_object_or_404(Car, id=car_id)
+        driver = get_object_or_404(Driver, id=driver_id)
+
+        if driver in car.drivers.all():
+            car.drivers.remove(driver)
+
+        return redirect("taxi:car-detail", pk=car.id)
