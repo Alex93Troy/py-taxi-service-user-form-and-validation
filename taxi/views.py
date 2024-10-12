@@ -14,7 +14,7 @@ from .forms import DriverLicenseUpdateForm
 @login_required
 def index(request):
     """View function for the home page of the site."""
-    num_drivers = Driver.objects.count()
+    num_drivers = get_user_model().objects.count()
     num_cars = Car.objects.count()
     num_manufacturers = Manufacturer.objects.count()
 
@@ -79,11 +79,11 @@ class CarUpdateView(LoginRequiredMixin, generic.UpdateView):
 
 class CarDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Car
-    success_url = reverse_lazy('taxi:car-list')
-    template_name = 'taxi/car_confirm_delete.html'
+    success_url = reverse_lazy("taxi:car-list")
+    template_name = "taxi/car_confirm_delete.html"
 
     def get(self, request, *args, **kwargs):
-        previous_url = request.META.get('HTTP_REFERER', '')
+        previous_url = request.META.get("HTTP_REFERER", "")
         messages.info(request, previous_url)
         return super().get(request, *args, **kwargs)
 
@@ -95,7 +95,6 @@ class DriverListView(LoginRequiredMixin, generic.ListView):
 
 class DriverDetailView(LoginRequiredMixin, generic.DetailView):
     model = get_user_model()
-    queryset = Driver.objects.all().prefetch_related("cars__manufacturer")
 
 
 class DriverCreateView(LoginRequiredMixin, generic.CreateView):
@@ -132,7 +131,7 @@ class AssignDriverToCarView(LoginRequiredMixin, View):
 class RemoveDriverFromCarView(View):
     def post(self, request, car_id, driver_id):
         car = get_object_or_404(Car, id=car_id)
-        driver = get_object_or_404(Driver, id=driver_id)
+        driver = get_object_or_404(get_user_model(), id=get_user_model())
 
         if driver in car.drivers.all():
             car.drivers.remove(driver)
