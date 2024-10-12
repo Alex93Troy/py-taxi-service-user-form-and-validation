@@ -24,11 +24,12 @@
     {% endfor %}
   </div>
 <div>
-  <a href="{% url 'taxi:driver-update' pk=driver.id %}" class="btn btn-secondary">
+  <a href="{% url 'taxi:driver_update' pk=driver.id %}" class="btn btn-secondary">
     Update
   </a>
-  <a  href="{% url 'taxi:driver-delete' pk=driver.id %}" class="btn btn-danger">
+  <a  href="{% url 'taxi:driver_delete' pk=driver.id %}" class="btn btn-danger">
     Delete
   </a>
+<a href="{% url 'taxi:driver_list'  %}" class="btn btn-primary link-to-page"> Prev </a>
 </div>
 {% endblock %}

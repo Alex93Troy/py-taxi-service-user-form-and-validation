@@ -3,7 +3,7 @@
 {% block content %}
   <h1>
     Car list
-    <a href="{% url 'taxi:car-create' %}" class="btn btn-primary link-to-page">
+    <a href="{% url 'taxi:car_create' %}" class="btn btn-primary link-to-page">
       Create
     </a>
   </h1>
@@ -11,7 +11,7 @@
     <ul>
       {% for car in car_list %}
         <li>
-          <a href="{% url "taxi:car-detail" pk=car.id %} ">{{ car.id }}</a>
+          <a href="{% url "taxi:car_detail" pk=car.id %} ">{{ car.id }}</a>
           {{ car.model }} ({{ car.manufacturer.name }})
         </li>
       {% endfor %}
@@ -19,4 +19,7 @@
   {% else %}
     <p>There are no cars in taxi</p>
   {% endif %}
+  <div class="d-flex justify-content-start" style="margin-bottom: 10px">
+      <a href="javascript:history.back()" class="btn btn-secondary">Return</a>
+    </div>
 {% endblock %}
