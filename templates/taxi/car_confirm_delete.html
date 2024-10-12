@@ -2,10 +2,17 @@
 
 {% block content %}
   <h3>Are you sure, you want to delete car "{{ car.model }}"?</h3>
-  <form action="" method="post">
+  <<form action="" method="post">
     {% csrf_token %}
-
+    
     <input type="submit" value="Yes" class="btn btn-danger">
-    <a href="{% if object.pk %}{% url 'taxi:car_detail' pk=object.pk %}{% else %}{% url 'taxi:car_list' %}{% endif %}" class="btn btn-secondary">Cancel</a>
-  </form>
+
+    {% if messages %}
+        {% for message in messages %}
+            <a href="{{ message }}" class="btn btn-secondary">Cancel</a>
+        {% endfor %}
+    {% else %}
+        <a href="{% url 'taxi:car-list' %}" class="btn btn-secondary">Cancel</a>
+    {% endif %}
+</form>
 {% endblock %}
